@@ -31,20 +31,18 @@ class Lightbox extends Component {
 		}
 		return extStyles;
 	}
-
 	constructor () {
 		super();
 
-		this.close = this.close.bind(this);
 		this.gotoNext = this.gotoNext.bind(this);
 		this.gotoPrev = this.gotoPrev.bind(this);
+		this.handleClose = this.handleClose.bind(this);
 		this.handleImageClick = this.handleImageClick.bind(this);
 		this.handleKeyboardInput = this.handleKeyboardInput.bind(this);
 		this.handleResize = this.handleResize.bind(this);
 
 		this.state = {};
 	}
-
 	componentWillReceiveProps (nextProps) {
 		if (nextProps.isOpen && nextProps.enableKeyboardInput) {
 			if (utils.canUseDOM) window.addEventListener('keydown', this.handleKeyboardInput);
@@ -62,13 +60,9 @@ class Lightbox extends Component {
 		}
 	}
 
-	close (e) {
-		if (e.target.id !== 'react-images-container') return;
-
-		if (this.props.backdropClosesModal && this.props.onClose) {
-			this.props.onClose();
-		}
-	}
+	// ------------------------------
+	// MANIPULATE NEXT/PREV
+	// ------------------------------
 
 	gotoNext (event) {
 		if (this.props.currentImage === (this.props.images.length - 1)) return;
@@ -78,7 +72,6 @@ class Lightbox extends Component {
 		}
 		this.props.onClickNext();
 	}
-
 	gotoPrev (event) {
 		if (this.props.currentImage === 0) return;
 		if (event) {
@@ -88,16 +81,25 @@ class Lightbox extends Component {
 		this.props.onClickPrev();
 	}
 
+	// ------------------------------
+	// EVENT HANDLING
+	// ------------------------------
+
+	handleClose (e) {
+		if (e.target.id !== 'react-images-container') return;
+
+		if (this.props.backdropClosesModal && this.props.onClose) {
+			this.props.onClose();
+		}
+	}
 	handleImageClick (e) {
 		if (!this.props.onClickShowNextImage) return;
 
 		this.gotoNext(e);
 	}
-
 	handleImageLoad (e, index) {
 		// console.log('image', index, 'loaded', e);
 	}
-
 	handleKeyboardInput (event) {
 		if (event.keyCode === 37) {
 			this.gotoPrev(event);
@@ -111,13 +113,22 @@ class Lightbox extends Component {
 		}
 		return false;
 	}
+	handleSwiping (args) {
+		const node = args[0].target;
+		const left = args[1] *= -1;
 
+		node.style.transform = `translate3d(${left}px, 0, 0)`;
+	}
 	handleResize () {
 		if (!utils.canUseDOM) return;
 		this.setState({
 			windowHeight: window.innerHeight || 0,
 		});
 	}
+
+	// ------------------------------
+	// RENDERING
+	// ------------------------------
 
 	renderArrowNext () {
 		if (this.props.currentImage === (this.props.images.length - 1)) return null;
@@ -172,8 +183,8 @@ class Lightbox extends Component {
 				key="dialog"
 				duration={250}
 				className={classes.container}
-				onClick={this.close}
-				onTouchEnd={this.close}
+				onClick={this.handleClose}
+				onTouchEnd={this.handleClose}
 			>
 				<span className={classes.contentHeightShim} />
 				<div className={classes.content}>
@@ -227,7 +238,11 @@ class Lightbox extends Component {
 				className={classes.figure}
 				style={{ maxWidth: this.props.width }}
 			>
-				<Swipeable onSwipedLeft={this.gotoNext} onSwipedRight={this.gotoPrev} >
+				<Swipeable
+					onSwipedLeft={this.gotoNext}
+					onSwipedRight={this.gotoPrev}
+					onSwiping={(...args) => this.handleSwiping(args)}
+					>
 					<img className={classes.image}
 						onClick={this.handleImageClick}
 						onLoad={e => this.handleImageLoad(e, currentImage)}
