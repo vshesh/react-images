@@ -5,7 +5,7 @@ import camelCase from 'jss-camel-case';
 import px from 'jss-px';
 import nested from 'jss-nested';
 import vendorPrefixer from 'jss-vendor-prefixer';
-import Swipe from 'react-swipe';
+import ReactSwipe from 'react-swipe';
 
 export let jss = create();
 export let useSheet = reactJss(jss);
@@ -31,14 +31,18 @@ class Lightbox extends Component {
 		}
 		return extStyles;
 	}
-	constructor () {
-		super();
+	constructor (props) {
+		super(props);
 
 		this.gotoNext = this.gotoNext.bind(this);
 		this.gotoPrev = this.gotoPrev.bind(this);
 		this.handleClose = this.handleClose.bind(this);
-		this.handleImageClick = this.handleImageClick.bind(this);
+		this.updateImageIndex = this.updateImageIndex.bind(this);
+		this.handleSwipeCallback = this.handleSwipeCallback.bind(this);
 		this.handleKeyboardInput = this.handleKeyboardInput.bind(this);
+		this.handleMouseMove = this.handleMouseMove.bind(this);
+
+		this.state = {};
 	}
 	componentWillReceiveProps (nextProps) {
 		if (nextProps.isOpen && nextProps.enableKeyboardInput) {
@@ -54,7 +58,7 @@ class Lightbox extends Component {
 		}
 	}
 	componentDidUpdate () {
-		console.log('did update');
+		console.log('did update', this.props.currentImage);
 	}
 
 	// ------------------------------
@@ -62,25 +66,24 @@ class Lightbox extends Component {
 	// ------------------------------
 
 	gotoNext (event) {
-		if (this.props.currentImage === (this.props.images.length - 1)) return;
+		// if (this.props.currentImage === (this.props.images.length - 1)) return;
 		if (event) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
-		// console.log(this.refs.ReactSwipe);
-		// console.log(this.refs.ReactSwipe.swipe);
-		console.log(this.refs.ReactSwipe.swipe.getPos());
-		this.refs.ReactSwipe.next();
+
 		// this.props.onClickNext();
+		this.refs.ReactSwipe.swipe.next();
 	}
 	gotoPrev (event) {
-		if (this.props.currentImage === 0) return;
+		// if (this.props.currentImage === 0) return;
 		if (event) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
-		this.refs.ReactSwipe.prev();
+
 		// this.props.onClickPrev();
+		this.refs.ReactSwipe.swipe.prev();
 	}
 
 	// ------------------------------
@@ -94,13 +97,14 @@ class Lightbox extends Component {
 			this.props.onClose();
 		}
 	}
-	handleImageClick (e) {
-		if (!this.props.onClickShowNextImage) return;
-
-		this.gotoNext(e);
+	handleSwipeCallback (index, element) {
+		// console.log('did swipe with index', index, element);
+	}
+	updateImageIndex (index) {
+		// this.setState({ currentImageIndex: index });
 	}
 	handleImageLoad (e, index) {
-		// console.log('image', index, 'loaded', e);
+		// console.log(e.target.width);
 	}
 	handleKeyboardInput (event) {
 		if (event.keyCode === 37) {
@@ -115,51 +119,78 @@ class Lightbox extends Component {
 		}
 		return false;
 	}
+	handleMouseMove (e) {
+		// if (this.state.userIsActive) return;
+		//
+		// this.setState({ userIsActive: true });
+		// setTimeout(() => {
+		// 	this.setState({ userIsActive: false });
+		// 	console.log('userIsActive');
+		// }, 2000);
+	}
 
 	// ------------------------------
 	// RENDERING
 	// ------------------------------
 
 	renderArrowNext () {
-		if (this.props.currentImage === (this.props.images.length - 1)) return null;
+		// if (this.state.currentImageIndex === (this.props.images.length - 1)) return null;
 		const { classes } = this.props.sheet;
 		return (
 			<button title="Next (Right arrow key)"
 				type="button"
-				className={`${classes.arrow} ${classes.arrowNext}`}
+				className={`${classes.button} ${classes.buttonNext}`}
 				onClick={this.gotoNext}
 				onTouchEnd={this.gotoNext}
-			>
-				<Icon type="arrowRight" />
+				>
+				<span className={`${classes.arrow} ${classes.arrowNext}`}>
+					<Icon type="arrowRight" />
+				</span>
 			</button>
 		);
 	}
 
 	renderArrowPrev () {
-		if (this.props.currentImage === 0) return null;
+		// if (this.state.currentImageIndex === 0) return null;
 		const { classes } = this.props.sheet;
 
 		return (
 			<button title="Previous (Left arrow key)"
 				type="button"
-				className={`${classes.arrow} ${classes.arrowPrev}`}
+				className={`${classes.button} ${classes.buttonPrev}`}
 				onClick={this.gotoPrev}
 				onTouchEnd={this.gotoPrev}
-			>
-				<Icon type="arrowLeft" />
+				>
+				<span className={`${classes.arrow} ${classes.arrowPrev}`}>
+					<Icon type="arrowLeft" />
+				</span>
 			</button>
 		);
 	}
 
-	renderCloseButton () {
-		if (!this.props.showCloseButton) return null;
+	renderHeaderRow () {
+		const { currentImage, images, showCloseButton, showImageCount } = this.props;
+		const { currentImageIndex } = this.state;
 		const { classes } = this.props.sheet;
 
+		if (this.refs.ReactSwipe) {
+			console.log(this.refs.ReactSwipe.swipe.getPos());
+		}
+
+		const elClose = showCloseButton ? (
+			<button title="Close (Esc)" className={classes.headerClose} onClick={this.props.onClose}>
+				<Icon type="close" />
+			</button>
+		) : null;
+
+		const elCount = showImageCount
+			? <div className={classes.headerCount}>{currentImageIndex} of {images.length}</div>
+			: null;
+
 		return (
-			<div className={classes.closeBar}>
-				<button title="Close (Esc)" className={classes.closeButton} onClick={this.props.onClose}>
-					<Icon type="close" />
-				</button>
+			<div className={`${classes.row} ${classes.headerRow}`}>
+				{elCount}
+				{elClose}
 			</div>
 		);
 	}
@@ -170,39 +201,38 @@ class Lightbox extends Component {
 
 		return (
 			<Fade
+				aria-hidden={!this.props.isOpen}
 				className={classes.container}
 				duration={250}
 				id="react-images-container"
 				key="dialog"
-				onClick={this.handleClose}
-				onTouchEnd={this.handleClose}
+				onMouseMove={this.handleMouseMove}
+				role="dialog"
 				>
-				<div className={classes.content} style={{ maxWidth: this.props.width }}>
-					{this.renderCloseButton()}
+				{this.renderHeaderRow()}
+				<div className={`${classes.row} ${classes.bodyRow}`}>
 					{this.renderImages()}
+					<div className={classes.arrows}>
+						{this.renderArrowPrev()}
+						{this.renderArrowNext()}
+					</div>
 				</div>
-				{this.renderArrowPrev()}
-				{this.renderArrowNext()}
+				{this.renderFooterRow('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mattis ultricies erat at feugiat.')}
 			</Fade>
 		);
 	}
-	renderFooter (caption, count) {
+	renderFooterRow (caption) {
 		const { images, showImageCount } = this.props;
 		const { classes } = this.props.sheet;
 
 		if (!caption && !showImageCount) return null;
-
-		const imageCount = showImageCount
-			? <div className={classes.footerCount}>{count} of {images.length}</div>
-			: null;
-		const figcaption = caption
-			? <figcaption className={classes.footerCaption}>{caption}</figcaption>
+		const elCaption = caption
+			? <div className={classes.footerCaption}>{caption}</div>
 			: null;
 
 		return (
-			<div className={classes.footer}>
-				{imageCount}
-				{figcaption}
+			<div className={`${classes.row} ${classes.footerRow}`}>
+				{elCaption}
 			</div>
 		);
 	}
@@ -214,46 +244,46 @@ class Lightbox extends Component {
 
 		const image = images[currentImage];
 
-		let srcset;
-		let sizes;
+		const containerStyles = { height: '100%' };
+		const wrapperStyles = { height: '100%' };
 
 		return (
-			<Swipe
+			<ReactSwipe
+				callback={this.handleSwipeCallback}
 				className={classes.swipeContainer}
+				containerStyles={containerStyles}
 				continuous={false}
 				disableScroll
 				key={images.length}
 				ref="ReactSwipe"
-				slideToIndex={currentImage}
 				startSlide={currentImage}
-				stopPropagation>
+				wrapperStyles={wrapperStyles}
+				>
 				{images.map((image, i) => {
+					let srcset;
+					let sizes;
+
 					if (image.srcset) {
 						srcset = image.srcset.join();
 						sizes = '100vw';
 					}
 
 					return (
-						<figure
-							className={classes.figure}
+						<div
+							className={classes.imageWrapper}
 							key={i}
 							>
 							<img
 								className={classes.image}
-								onClick={this.handleImageClick}
 								onLoad={e => this.handleImageLoad(e, currentImage)}
 								sizes={sizes}
 								src={image.src}
 								srcSet={srcset}
-								style={{
-									cursor: this.props.onClickShowNextImage ? 'pointer' : 'auto',
-								}}
 							/>
-							{this.renderFooter(image.caption, i + 1)}
-						</figure>
+						</div>
 					);
 				})}
-			</Swipe>
+			</ReactSwipe>
 		);
 	}
 	render () {
@@ -281,7 +311,6 @@ Lightbox.propTypes = {
 	isOpen: PropTypes.bool,
 	onClickNext: PropTypes.func.isRequired,
 	onClickPrev: PropTypes.func.isRequired,
-	onClickShowNextImage: PropTypes.bool,
 	onClose: PropTypes.func.isRequired,
 	sheet: PropTypes.object,
 	showCloseButton: PropTypes.bool,
@@ -307,7 +336,6 @@ Lightbox.propTypes = {
 Lightbox.defaultProps = {
 	enableKeyboardInput: true,
 	currentImage: 0,
-	onClickShowNextImage: true,
 	showCloseButton: true,
 	showImageCount: true,
 	width: 900,
