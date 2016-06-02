@@ -134,9 +134,8 @@ class Lightbox extends Component {
 				type="button"
 				className={`${classes.arrow} ${classes.arrowPrev}`}
 				onClick={this.gotoPrev}
-				onTouchEnd={this.gotoPrev}
-			>
-				<Icon type="arrowLeft" />
+				onTouchEnd={this.gotoPrev}>
+				<Icon type={'arrowLeft'}/>
 			</button>
 		);
 	}
@@ -148,9 +147,8 @@ class Lightbox extends Component {
 				type="button"
 				className={`${classes.arrow} ${classes.arrowNext}`}
 				onClick={this.gotoNext}
-				onTouchEnd={this.gotoNext}
-				>
-				<Icon type="arrowRight" />
+				onTouchEnd={this.gotoNext}>
+				<Icon type={"arrowRight"} />
 			</button>
 		);
 	}
@@ -263,13 +261,7 @@ Lightbox.propTypes = {
 	currentImage: PropTypes.number,
 	enableKeyboardInput: PropTypes.bool,
 	imageCountSeparator: PropTypes.string,
-	images: PropTypes.arrayOf(
-		PropTypes.shape({
-			src: PropTypes.string.isRequired,
-			srcset: PropTypes.array,
-			caption: PropTypes.string,
-		})
-	).isRequired,
+	images: PropTypes.array.isRequired,
 	isOpen: PropTypes.bool,
 	onClickImage: PropTypes.func,
 	onClickNext: PropTypes.func,

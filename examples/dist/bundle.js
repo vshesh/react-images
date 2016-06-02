@@ -703,8 +703,7 @@ var Lightbox = (function (_Component) {
 					type: 'button',
 					className: classes.arrow + ' ' + classes.arrowPrev,
 					onClick: this.gotoPrev,
-					onTouchEnd: this.gotoPrev
-				},
+					onTouchEnd: this.gotoPrev },
 				_react2['default'].createElement(_Icon2['default'], { type: 'arrowLeft' })
 			);
 		}
@@ -720,9 +719,8 @@ var Lightbox = (function (_Component) {
 					type: 'button',
 					className: classes.arrow + ' ' + classes.arrowNext,
 					onClick: this.gotoNext,
-					onTouchEnd: this.gotoNext
-				},
-				_react2['default'].createElement(_Icon2['default'], { type: 'arrowRight' })
+					onTouchEnd: this.gotoNext },
+				_react2['default'].createElement(_Icon2['default'], { type: "arrowRight" })
 			);
 		}
 	}, {
@@ -859,11 +857,7 @@ Lightbox.propTypes = {
 	currentImage: _react.PropTypes.number,
 	enableKeyboardInput: _react.PropTypes.bool,
 	imageCountSeparator: _react.PropTypes.string,
-	images: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-		src: _react.PropTypes.string.isRequired,
-		srcset: _react.PropTypes.array,
-		caption: _react.PropTypes.string
-	})).isRequired,
+	images: _react.PropTypes.array.isRequired,
 	isOpen: _react.PropTypes.bool,
 	onClickImage: _react.PropTypes.func,
 	onClickNext: _react.PropTypes.func,
