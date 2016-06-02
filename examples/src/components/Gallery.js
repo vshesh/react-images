@@ -71,6 +71,7 @@ class Gallery extends Component {
 		);
 	}
 	render () {
+    var Image = (props) => <img src={props.item.src}/>
 		return (
 			<div className="section">
 				{this.props.heading && <h2>{this.props.heading}</h2>}
@@ -85,7 +86,7 @@ class Gallery extends Component {
 					onClickImage={this.handleClickImage}
 					onClose={this.closeLightbox}
 					theme={this.props.theme}
-				/>
+				>{<Image/>}</Lightbox>
 			</div>
 		);
 	}

@@ -234,25 +234,18 @@ class Lightbox extends Component {
 		}
 
 		return (
-			<figure key={`image ${currentImage}`}
-				className={classes.figure}
-				style={{ maxWidth: this.props.width }}
-				>
-				<Swipeable onSwipedLeft={this.gotoNext} onSwipedRight={this.gotoPrev}>
-					<img className={classes.image}
-						onClick={this.handleImageClick}
-						sizes={sizes}
-						src={image.src}
-						srcSet={srcset}
-						style={{
-							cursor: this.props.onClickImage ? 'pointer' : 'auto',
-							maxHeight: windowHeight,
-						}}
-					/>
-				</Swipeable>
-				{this.renderFooter(images[currentImage].caption)}
-			</figure>
-		);
+  		<Swipeable onSwipedLeft={this.gotoNext} onSwipedRight={this.gotoPrev}>
+        {React.cloneElement(this.props.children, {
+          item: image,
+          className:classes.image,
+  				onClick:this.handleImageClick,
+  				sizes:sizes,
+  				style:{
+  					cursor: this.props.onClickImage ? 'pointer' : 'auto',
+  					maxHeight: windowHeight,
+  				}})}
+  		</Swipeable>
+    );
 	}
 	render () {
 		return (

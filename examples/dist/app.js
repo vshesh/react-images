@@ -9,10 +9,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactDom = require('react-dom');
 
-var _reactImages = require('react-images');
-
-var _reactImages2 = _interopRequireDefault(_reactImages);
-
 var _componentsGallery = require('./components/Gallery');
 
 var _componentsGallery2 = _interopRequireDefault(_componentsGallery);
@@ -78,7 +74,7 @@ var IMAGES_PRELOAD = IMAGE_MAP.map(function (img) {
 	)
 ), document.getElementById('example'));
 
-},{"./components/Gallery":2,"react":undefined,"react-dom":undefined,"react-images":undefined}],2:[function(require,module,exports){
+},{"./components/Gallery":2,"react":undefined,"react-dom":undefined}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -196,6 +192,9 @@ var Gallery = (function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
+			var Image = function Image(props) {
+				return _react2['default'].createElement('img', { src: props.item.src });
+			};
 			return _react2['default'].createElement(
 				'div',
 				{ className: 'section' },
@@ -210,16 +209,20 @@ var Gallery = (function (_Component) {
 					this.props.subheading
 				),
 				this.renderGallery(),
-				_react2['default'].createElement(_reactImages2['default'], {
-					currentImage: this.state.currentImage,
-					images: this.props.images,
-					isOpen: this.state.lightboxIsOpen,
-					onClickPrev: this.gotoPrevious,
-					onClickNext: this.gotoNext,
-					onClickImage: this.handleClickImage,
-					onClose: this.closeLightbox,
-					theme: this.props.theme
-				})
+				_react2['default'].createElement(
+					_reactImages2['default'],
+					{
+						currentImage: this.state.currentImage,
+						images: this.props.images,
+						isOpen: this.state.lightboxIsOpen,
+						onClickPrev: this.gotoPrevious,
+						onClickNext: this.gotoNext,
+						onClickImage: this.handleClickImage,
+						onClose: this.closeLightbox,
+						theme: this.props.theme
+					},
+					_react2['default'].createElement(Image, null)
+				)
 			);
 		}
 	}]);

@@ -61,7 +61,9 @@ var Fade = (function (_Component) {
 		}
 	}, {
 		key: 'componentDidLeave',
-		value: function componentDidLeave() {}
+		value: function componentDidLeave() {
+			// empty
+		}
 	}, {
 		key: '_showElement',
 		value: function _showElement() {
@@ -470,26 +472,17 @@ var Lightbox = (function (_Component) {
 			}
 
 			return _react2['default'].createElement(
-				'figure',
-				{ key: 'image ' + currentImage,
-					className: classes.figure,
-					style: { maxWidth: this.props.width }
-				},
-				_react2['default'].createElement(
-					_reactSwipeable2['default'],
-					{ onSwipedLeft: this.gotoNext, onSwipedRight: this.gotoPrev },
-					_react2['default'].createElement('img', { className: classes.image,
-						onClick: this.handleImageClick,
-						sizes: sizes,
-						src: image.src,
-						srcSet: srcset,
-						style: {
-							cursor: this.props.onClickImage ? 'pointer' : 'auto',
-							maxHeight: windowHeight
-						}
-					})
-				),
-				this.renderFooter(images[currentImage].caption)
+				_reactSwipeable2['default'],
+				{ onSwipedLeft: this.gotoNext, onSwipedRight: this.gotoPrev },
+				_react2['default'].cloneElement(this.props.children, {
+					item: image,
+					className: classes.image,
+					onClick: this.handleImageClick,
+					sizes: sizes,
+					style: {
+						cursor: this.props.onClickImage ? 'pointer' : 'auto',
+						maxHeight: windowHeight
+					} })
 			);
 		}
 	}, {
